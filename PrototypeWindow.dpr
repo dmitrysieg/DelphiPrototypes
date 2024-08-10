@@ -1,8 +1,14 @@
 {$APPTYPE GUI}
 
 uses
+   {$R 'menu.res' 'menu.rc'}
    Windows,
    Messages;
+
+const
+   clsName: PChar = 'MyWindowClass';
+   wndName: PChar = 'Hello, World!';
+   IDM_EXIT: LongWord = 103;
 
 function WndProc(hwnd: HWND; msg, wPar, lPar: LongWord): LRESULT; stdcall;
 var
@@ -24,19 +30,23 @@ begin
          EndPaint(hwnd, ps);
       end;
 
+      WM_COMMAND: begin
+         if wPar = IDM_EXIT then begin
+            PostQuitMessage(0);
+            WndProc := 0;
+         end;
+      end;
+
       else WndProc := DefWindowProc(hwnd, msg, wPar, lPar);
    end;
 end;
-
-const
-   clsName: PChar = 'MyWindowClass';
-   wndName: PChar = 'Hello, World!';
 
 var
    hInst: HMODULE;
    wClass: TWndClass;
    hwnd: Windows.HWND;
    msg: Windows.MSG;
+   MainMenu: HMENU;
 begin
    hInst := GetModuleHandle(nil);
 
@@ -62,6 +72,9 @@ begin
       hInst,
       nil
    );
+
+   MainMenu := LoadMenu(hInst, 'MYMENU');
+   SetMenu(hwnd, MainMenu);
 
    ShowWindow(hwnd, SW_SHOWNORMAL);
    UpdateWindow(hwnd);

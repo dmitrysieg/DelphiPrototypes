@@ -1,0 +1,21 @@
+#define IDM_NEW	100
+#define IDM_OPEN	101
+#define IDM_SAVE	102
+#define IDM_EXIT	103
+#define IDM_ABOUT	104
+
+MYMENU MENU
+{
+	POPUP "&File"
+	{
+		MENUITEM "&New", IDM_NEW
+		MENUITEM "&Open", IDM_OPEN
+      MENUITEM "&Save", IDM_SAVE, GRAYED
+      MENUITEM SEPARATOR
+      MENUITEM "&Exit", IDM_EXIT
+	}
+	POPUP "&Help"
+	{
+		MENUITEM "&About", IDM_ABOUT
+	}
+}

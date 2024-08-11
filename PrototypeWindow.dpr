@@ -3,12 +3,46 @@
 uses
    {$R 'menu.res' 'menu.rc'}
    Windows,
-   Messages;
+   Messages,
+   CommDlg;
 
 const
    clsName: PChar = 'MyWindowClass';
    wndName: PChar = 'Hello, World!';
    IDM_EXIT: LongWord = 103;
+   IDM_OPEN: LongWord = 101;
+   MAX_FILENAME_LENGTH = 1024;
+
+procedure ProcessOpenFile(hwnd: HWND);
+var
+   ofn: OPENFILENAME;
+   oFileName: AnsiString;
+   oFileTitle: AnsiString;
+begin
+   FillChar(ofn, sizeof(ofn), 0);
+   SetLength(oFilename, MAX_FILENAME_LENGTH);
+   SetLength(oFileTitle, MAX_FILENAME_LENGTH);
+   
+   with ofn do begin
+      lStructSize := sizeof(ofn);
+
+      hWndOwner := hwnd;
+      hInstance := GetModuleHandle(nil);
+
+      lpstrFile := PAnsiChar(oFileName);
+      lpstrFileTitle := PAnsiChar(oFileTitle);
+      nMaxFileTitle := MAX_FILENAME_LENGTH;
+      nMaxFile := MAX_FILENAME_LENGTH;
+      lpstrTitle := PChar('Open File...');
+      lpstrFilter := PChar('All files (*.*)' + #0 + '*.*' + #0 + 'EXE files (*.exe)' + #0 + '*.exe' + #0);
+      nFilterIndex := 2;
+      Flags := OFN_PATHMUSTEXIST or OFN_FILEMUSTEXIST;
+   end;
+
+   if GetOpenFileName(ofn) then begin
+      MessageBox(hwnd, PChar(oFileName), PChar(oFileTitle), 0);
+   end;
+end;
 
 function WndProc(hwnd: HWND; msg, wPar, lPar: LongWord): LRESULT; stdcall;
 var
@@ -34,6 +68,9 @@ begin
          if wPar = IDM_EXIT then begin
             PostQuitMessage(0);
             WndProc := 0;
+         end else
+         if wPar = IDM_OPEN then begin
+            ProcessOpenFile(hwnd);
          end;
       end;
 

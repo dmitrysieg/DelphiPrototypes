@@ -10,7 +10,7 @@ MYMENU MENU
    {
       MENUITEM "&New", IDM_NEW
       MENUITEM "&Open", IDM_OPEN
-      MENUITEM "&Save", IDM_SAVE, GRAYED
+      MENUITEM "&Save", IDM_SAVE
       MENUITEM SEPARATOR
       MENUITEM "&Exit", IDM_EXIT
    }

@@ -4,13 +4,15 @@ uses
    {$R 'menu.res' 'menu.rc'}
    Windows,
    Messages,
-   CommDlg;
+   CommDlg,
+   StrUtils;
 
 const
    clsName: PChar = 'MyWindowClass';
    wndName: PChar = 'Hello, World!';
    IDM_EXIT: LongWord = 103;
    IDM_OPEN: LongWord = 101;
+   IDM_SAVE: LongWord = 102;
    MAX_FILENAME_LENGTH = 1024;
 
 procedure ProcessOpenFile(hwnd: HWND);
@@ -44,6 +46,47 @@ begin
    end;
 end;
 
+procedure ProcessSaveFileExtension(var S: AnsiString; Extension: AnsiString);
+begin
+   SetLength(S, lstrlen(PChar(S)));
+   if not StrUtils.AnsiEndsText(Extension, S) then begin
+      S := lstrcat(PChar(S), PChar(Extension));
+   end;
+end;
+
+procedure ProcessSaveFile(hwnd: HWND);
+var
+   ofn: OPENFILENAME;
+   oFileName: AnsiString;
+   oFileTitle: AnsiString;
+begin
+   FillChar(ofn, sizeof(ofn), 0);
+   SetLength(oFilename, MAX_FILENAME_LENGTH);
+   SetLength(oFileTitle, MAX_FILENAME_LENGTH);
+
+   with ofn do begin
+      lStructSize := sizeof(ofn);
+
+      hWndOwner := hwnd;
+      hInstance := GetModuleHandle(nil);
+
+      lpstrFile := PAnsiChar(oFileName);
+      lpstrFileTitle := PAnsiChar(oFileTitle);
+      nMaxFileTitle := MAX_FILENAME_LENGTH;
+      nMaxFile := MAX_FILENAME_LENGTH;
+      lpstrTitle := PChar('Save File...');
+      lpstrFilter := PChar('EXE files (*.exe)' + #0 + '*.exe' + #0);
+      nFilterIndex := 1;
+//      Flags := OFN_PATHMUSTEXIST or OFN_FILEMUSTEXIST;
+   end;
+
+   if GetSaveFileName(ofn) then begin
+      ProcessSaveFileExtension(oFileName, '.exe');
+      ProcessSaveFileExtension(oFileTitle, '.exe');
+      MessageBox(hwnd, PChar(oFileName), PChar(oFileTitle), 0);
+   end;
+end;
+
 function WndProc(hwnd: HWND; msg, wPar, lPar: LongWord): LRESULT; stdcall;
 var
    hdc: Windows.HDC;
@@ -71,6 +114,9 @@ begin
          end else
          if wPar = IDM_OPEN then begin
             ProcessOpenFile(hwnd);
+         end else
+         if wPar = IDM_SAVE then begin
+            ProcessSaveFile(hwnd);
          end;
       end;
 
